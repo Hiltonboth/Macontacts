@@ -1,5 +1,6 @@
-**Scholarship and Lead Search Tool
-**
+Scholarship and Lead Search Tool
+
+
 Overview
 This web application is designed to help users find scholarships and professional leads by generating targeted Google search queries. It simplifies the search process by constructing advanced search strings based on user-provided criteria, saving time and effort.
 
