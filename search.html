@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship and Lead Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="macontacts logo.png" type="image/png"> <style>
+        /* Custom CSS for the Scholarship and Lead Search Form */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+            flex-grow: 1;
+            min-width: 200px; /* Increased for mobile */
+        }
+
+        .custom-select-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            background-color: #fff;
+            border-width: 1px;
+            border-color: #d1d5db;
+            border-radius: 0.375rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: border-color 0.15s ease-in-out, shadow-sm 0.15s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-select-trigger:hover, .custom-select-wrapper:focus-within .custom-select-trigger {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .custom-select-trigger span {
+            margin-right: 0.5rem;
+        }
+
+        .custom-select-trigger svg {
+            height: 1rem;
+            width: 1rem;
+            fill: currentColor;
+            color: #6b7280;
+        }
+
+        .custom-options {
+            position: fixed;
+            top: 100%;
+            left: 0;
+            right: auto;
+            z-index: 20;
+            background-color: #fff;
+            border-width: 1px;
+            border-color: #d1d5db;
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+            overflow: auto;
+            max-height: 200px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out, transform 0.15s ease-in-out;
+            width: 100%; /* Make sure dropdown is full width on mobile */
+            box-sizing: border-box;
+        }
+
+        .custom-select-wrapper.open .custom-options {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-options li {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .custom-options li:hover, .custom-options li.selected {
+            background-color: #f0f9ff;
+            color: #1e293b;
+        }
+
+        .custom-select-wrapper select {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .result-card:hover {
+            transform: translateY(-0.25rem);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-details {
+            font-size: 1rem;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-description {
+            font-size: 0.875rem;
+            color: #4b5563;
+            line-height: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.15s ease-in-out;
+            text-decoration: none;
+        }
+
+        .result-link:hover {
+            background-color: #2563eb;
+        }
+
+        .result-link svg {
+            margin-right: 0.5rem;
+            height: 1rem;
+            width: 1rem;
+            fill: currentColor;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            color: #4b5563;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+            margin-right: 0.5rem;
+            border: 1px solid #d1d5db;
+            margin-bottom: 0.5rem; /* Added for mobile */
+        }
+
+        .tab-button:hover, .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #explanation {
+            background-color: #e5f7ff;
+            border: 1px solid #b0e0f3;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #3490dc;
+            font-size: 0.9rem;
+            line-height: 1.5rem;
+        }
+
+        #explanation h2 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            color: #2563eb;
+        }
+
+        #google-review {
+            background-color: #f0fdf4;
+            border: 1px solid #38a169;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 2rem;
+            color: #15803d;
+            font-size: 0.9rem;
+            line-height: 1.5rem;
+            text-align: center;
+        }
+
+        #google-review p {
+            margin-bottom: 0.75rem;
+        }
+
+        #google-review a {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #48bb78;
+            color: white;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.15s ease-in-out;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #google-review a:hover {
+            background-color: #2f855a;
+        }
+
+        #google-review a svg {
+            margin-right: 0.5rem;
+            height: 1rem;
+            width: 1rem;
+            fill: currentColor;
+        }
+
+        .logo {
+            max-height: 50px; /* Adjust as needed */
+            margin-right: 1rem; /* Add some space between logo and title */
+        }
+        .header {
+            display: flex;
+            align-items: center; /* Vertically center logo and title */
+            margin-bottom: 2rem; /* Add space below the header */
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <header class="header">
+            <img src="macontacts logo.png" alt="MaContacts Logo" class="logo">
+            <h1 class="text-3xl font-semibold text-gray-800">Find Opportunities</h1>
+        </header>
+
+        <div class="flex flex-wrap justify-center mb-6">
+            <button class="tab-button" data-tab="scholarships">Scholarships</button>
+            <button class="tab-button" data-tab="leads">Leads</button>
+        </div>
+
+        <section id="explanation">
+            <h2>How This Site Works</h2>
+            <p>
+                This site helps you find scholarships and leads by generating Google search queries. For scholarships, it searches a variety of sources. For leads, it helps you find potential business contacts and information on professional platforms. We use advanced search techniques to filter and refine the results, saving you time and effort. The search form above will help you construct these search queries.
+            </p>
+        </section>
+
+        <form id="search-form" class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div id="scholarships-tab" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mb-4">
+                        <label for="keywords" class="block text-gray-700 text-sm font-bold mb-2">Keywords</label>
+                        <input type="text" id="keywords" name="keywords" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., engineering, masters">
+                    </div>
+                    <div class="mb-4">
+                        <label for="major" class="block text-gray-700 text-sm font-bold mb-2">Major/Field of Study</label>
+                        <input type="text" id="major" name="major" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., computer science">
+                    </div>
+                    <div class="mb-4">
+                        <label for="study_location" class="block text-gray-700 text-sm font-bold mb-2">Study Location</label>
+                        <input type="text" id="study_location" name="study_location" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., USA, Europe">
+                    </div>
+                    <div class="mb-4">
+                        <label for="home_location" class="block text-gray-700 text-sm font-bold mb-2">Home Location</label>
+                        <input type="text" id="home_location" name="home_location" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., South Africa">
+                    </div>
+                    <div class="mb-4">
+                        <label for="level_of_study" class="block text-gray-700 text-sm font-bold mb-2">Level of Study</label>
+                        <div class="custom-select-wrapper" id="level-of-study-select-wrapper">
+                            <div class="custom-select-trigger" id="level-of-study-select-trigger">
+                                <span>Select Level</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                            <div class="custom-options" id="level-of-study-options">
+                                <select id="level_of_study" name="level_of_study" class="hidden">
+                                    <option value="">Select Level</option>
+                                    <option value="undergraduate">Undergraduate</option>
+                                    <option value="graduate">Graduate</option>
+                                    <option value="doctoral">Doctoral</option>
+                                    <option value="any">Any</option>
+                                </select>
+                                <ul>
+                                    <li data-value="undergraduate">Undergraduate</li>
+                                    <li data-value="graduate">Graduate</li>
+                                    <li data-value="doctoral">Doctoral</li>
+                                    <li data-value="any">Any</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Amount</label>
+                        <div class="custom-select-wrapper" id="amount-select-wrapper">
+                            <div class="custom-select-trigger" id="amount-select-trigger">
+                                <span>Select Amount</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                            <div class="custom-options" id="amount-options">
+                                <select id="amount" name="amount" class="hidden">
+                                    <option value="">Select Amount</option>
+                                    <option value="0-500">$0 - $500</option>
+                                    <option value="500-1000">$500 - $1,000</option>
+                                    <option value="1000-5000">$1,000 - $5,000</option>
+                                    <option value="5000-10000">$5,000 - $10,000</option>
+                                    <option value="10000+">$10,000+</option>
+                                    <option value="any">Any Amount</option>
+                                </select>
+                                <ul>
+                                     <li data-value="0-500">$0 - $500</li>
+                                    <li data-value="500-1000">$500 - $1,000</li>
+                                    <li data-value="1000-5000">$1,000 - $5,000</li>
+                                    <li data-value="5000-10000">$5,000 - $10,000</li>
+                                    <li data-value="10000+">$10,000+</li
+                                    <li data-value="any">Any Amount</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4 col-span-full">
+                        <label for="additional_keywords" class="block text-gray-700 text-sm font-bold mb-2">Additional Keywords (Scholarships)</label>
+                        <input type="text" id="additional_keywords" name="additional_keywords" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., grants, financial aid, bursaries">
+                        <p class="text-gray-500 text-xs italic mt-1">Enter extra keywords to refine your scholarship search.</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="exact_phrase_scholarships" class="inline-flex items-center">
+                        <input type="checkbox" id="exact_phrase_scholarships" name="exact_phrase_scholarships" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+                        <span class="ml-2 text-gray-700 text-sm">Exact Phrase</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="leads-tab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mb-4">
+                        <label for="job_title" class="block text-gray-700 text-sm font-bold mb-2">Job Title/Position</label>
+                        <input type="text" id="job_title" name="job_title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., Marketing Manager, CEO">
+                    </div>
+                    <div class="mb-4">
+                        <label for="location" class="block text-gray-700 text-sm font-bold mb-2">Location</label>
+                        <input type="text" id="location" name="location" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., New York, London">
+                    </div>
+                    <div class="mb-4">
+                        <label for="industry" class="block text-gray-700 text-sm font-bold mb-2">Industry</label>
+                        <input type="text" id="industry" name="industry" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., Retail, Finance">
+                    </div>
+                    <div class="mb-4">
+                        <label for="company" class="block text-gray-700 text-sm font-bold mb-2">Company</label>
+                        <input type="text" id="company" name="company" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., Google, Microsoft">
+                    </div>
+                     <div class="mb-4">
+                        <label for="seniority" class="block text-gray-700 text-sm font-bold mb-2">Seniority Level</label>
+                        <div class="custom-select-wrapper" id="seniority-select-wrapper">
+                            <div class="custom-select-trigger" id="seniority-select-trigger">
+                                <span>Select Seniority</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                            <div class="custom-options" id="seniority-options">
+                                <select id="seniority" name="seniority" class="hidden">
+                                    <option value="">Select Seniority</option>
+                                    <option value="executive">Executive</option>
+                                    <option value="director">Director</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="entry_level">Entry Level</option>
+                                    <option value="any">Any</option>
+                                </select>
+                                <ul>
+                                    <li data-value="executive">Executive</li>
+                                    <li data-value="director">Director</li>
+                                    <li data-value="manager">Manager</li>
+                                    <li data-value="entry_level">Entry Level</li>
+                                    <li data-value="any">Any</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="exact_phrase_leads" class="inline-flex items-center">
+                        <input type="checkbox" id="exact_phrase_leads" name="exact_phrase_leads" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+                        <span class="ml-2 text-gray-700 text-sm">Exact Phrase</span>
+                    </label>
+                </div>
+                <p class="text-gray-500 text-xs italic mb-4">
+                    For best results, use specific keywords.  For example, "software engineer" AND "San Francisco" AND "Fintech" site:linkedin.com
+                </p>
+            </div>
+
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Generate Search Queries
+            </button>
+        </form>
+
+        <div id="results" class="results-section">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Search Results</h2>
+            <div id="scholarship-results" class="space-y-4">
+                </div>
+            <div id="lead-results" class="space-y-4">
+                </div>
+        </div>
+
+        <section id="google-review">
+            <p>
+                If you find this site helpful, please support us by leaving a review on our Google Business Profile.  This helps others find our site and benefit from it.
+            </p>
+            <a href="https://www.google.com/search?q=yourbusinessname&rlst=g" target="_blank" rel="noopener noreferrer">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15q-1.5 0-2.875-.563T6.5 13.875q-.563-1.375-.563-2.875t.563-2.875T10 7.125q1.375 0 2.875.563T13.5 8.5q.563 1.375.563 2.875t-.563 2.875T10 15zm0-1.75q1.063 0 1.813-.75t.75-1.812q0-1.063-.75-1.813t-1.812-.75q-1.063 0-1.812.75t-.75 1.813q0 1.062.75 1.812t1.812.75zM10 2q3.75 0 6.438 2.688T19 10q0 3.75-2.687 6.438T10 19q-3.75 0-6.438-2.687T1 10q0-3.75 2.688-6.438T10 2zm0 1.75q-2.912 0-4.956 2.044T3 10q0 2.913 2.044 4.956T10 17q2.913 0 4.956-2.044T17 10q0-2.912-2.044-4.956T10 3.75z"/></svg>
+            Leave a Google Review
+        </a>
+    </section>
+    </div>
+
+    <script>
+        // Get tab elements
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const scholarshipResultsDiv = document.getElementById('scholarship-results');
+        const leadResultsDiv = document.getElementById('lead-results');
+        const form = document.getElementById('search-form');
+
+        // Function to switch tabs
+        function switchTab(tabName) {
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
+            const tabContent = document.getElementById(`${tabName}-tab`);
+
+            tabButton.classList.add('active');
+            tabContent.classList.add('active');
+        }
+
+        // Event listeners for tab buttons
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.dataset.tab;
+                switchTab(tabName);
+            });
+        });
+
+        // --- Custom Dropdown Logic ---
+        document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+            const select = wrapper.querySelector('select');
+            const trigger = wrapper.querySelector('.custom-select-trigger');
+            const options = wrapper.querySelector('.custom-options');
+            const selectId = select.id; // Get the ID of the select element
+
+            trigger.addEventListener('click', () => {
+                wrapper.classList.toggle('open');
+                if (wrapper.classList.contains('open')) {
+                     // Calculate and set dropdown position and width when opening
+                    const triggerRect = trigger.getBoundingClientRect();
+                    options.style.top = triggerRect.bottom + 'px';
+                    options.style.left = triggerRect.left + 'px';
+                    options.style.width = triggerRect.width + 'px';
+                }
+            });
+
+            options.addEventListener('click', (event) => {
+                if (event.target.tagName === 'LI') {
+                    const value = event.target.dataset.value;
+                    select.value = value;
+                    trigger.querySelector('span').textContent = event.target.textContent;
+                    wrapper.classList.remove('open');
+                     // Update selected option in custom dropdown
+                    options.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+                    event.target.classList.add('selected');
+
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (event) => {
+                if (!wrapper.contains(event.target) && !options.contains(event.target)) {
+                    wrapper.classList.remove('open');
+                }
+            });
+
+            // Keyboard navigation
+            select.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === 'Space') {
+                    wrapper.classList.toggle('open');
+                     if (wrapper.classList.contains('open')) {
+                        const triggerRect = trigger.getBoundingClientRect();
+                        options.style.top = triggerRect.bottom + 'px';
+                        options.style.left = triggerRect.left + 'px';
+                        options.style.width = triggerRect.width + 'px';
+                    }
+                } else if (event.key === 'Escape') {
+                    wrapper.classList.remove('open');
+                }
+            });
+        });
+
+
+        // --- Form Submission Logic ---
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            scholarshipResultsDiv.innerHTML = '';
+            leadResultsDiv.innerHTML = '';
+
+            const activeTab = document.querySelector('.tab-button.active').dataset.tab;
+
+            if (activeTab === 'scholarships') {
+                const keywords = document.getElementById('keywords').value;
+                const major = document.getElementById('major').value;
+                const studyLocation = document.getElementById('study_location').value;
+                const homeLocation = document.getElementById('home_location').value;
+                const levelOfStudy = document.getElementById('level_of_study').value;
+                const amount = document.getElementById('amount').value;
+                const additionalKeywords = document.getElementById('additional_keywords').value;
+                const exactPhrase = document.getElementById('exact_phrase_scholarships').checked;
+
+                // Construct the query as you specified
+                let query = '';
+                const baseQuery = exactPhrase
+                    ? `"${keywords}" "${major}" "${studyLocation}" "${levelOfStudy}"`
+                    : `${keywords} ${major} ${studyLocation} ${levelOfStudy}`;
+
+                const scholarshipSources = [
+                    "site:scholarships.com",
+                    "site:fastweb.com",
+                    "site:scholarshippoints.com",
+                    "site:collegescholarships.org",
+                    "site:scholarshipamerica.org",
+                    "site:cappex.com",
+                    "site:niche.com",
+                    "site:unigo.com",
+                    "site:chegg.com",
+                    "site:petersons.com",
+                    "site:scholarships360.org",
+                    "site:salliemae.com",
+                    "site:ed.gov",
+                    "site:studentscholarships.org",
+                    "site:globalscholarships.com",
+                    "site:scholarshipowl.com",
+                    "site:internationalstudent.com",
+                    "site:linkedin.com",
+                    "site:twitter.com"
+                ];
+
+                scholarshipSources.forEach(source => {
+                    const fullQuery = `https://www.google.com/search?q=${encodeURIComponent(baseQuery)} ${source}`;
+                    scholarshipResultsDiv.innerHTML += `
+                        <div class="result-card">
+                            <h3 class="result-title">Scholarship Search</h3>
+                            <p class="result-details">Source: ${source}</p>
+                            <p class="result-description">A search for scholarships matching your criteria on ${source}.</p>
+                            <a href="${fullQuery}" target="_blank" rel="noopener noreferrer" class="result-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M7.75 2.75a.75.75 0 00-1.5 0v1.636a2.625 2.625 0 00-1.246 5.108l-1.123.337a.75.75 0 00.956 1.145l1.507-1.506a3.375 3.375 0 013.219 2.732v3.836a.75.75 0 001.5 0v-3.836a3.375 3.375 0 013.219-2.732l1.507 1.506a.75.75 0 00.956-1.145l-1.123-.337a2.625 2.625 0 00-1.246-5.108V2.75z"/></svg>
+                                Search on Google
+                            </a>
+                        </div>
+                    `;
+                });
+            } else if (activeTab === 'leads') {
+                const jobTitle = document.getElementById('job_title').value;
+                const location = document.getElementById('location').value;
+                const industry = document.getElementById('industry').value;
+                const company = document.getElementById('company').value;
+                const seniority = document.getElementById('seniority').value;
+                const exactPhraseLeads = document.getElementById('exact_phrase_leads').checked;
+
+                let query = '';
+                const baseQuery = exactPhraseLeads
+                    ? `"${jobTitle}" "${location}" "${industry}" "${company}" "${seniority}"`
+                    : `${jobTitle} ${location} ${industry} ${company} ${seniority}`;
+
+                const leadSources = [
+                    "site:linkedin.com",
+                    "site:twitter.com",
+                    "site:facebook.com",
+                    "site:zoominfo.com",
+                    "site:rocketreach.co"
+                ];
+
+                leadSources.forEach(source => {
+                    const fullQuery = `https://www.google.com/search?q=${encodeURIComponent(baseQuery)} ${source}`;
+                    leadResultsDiv.innerHTML += `
+                        <div class="result-card">
+                            <h3 class="result-title">Lead Search</h3>
+                            <p class="result-details">Source: ${source}</p>
+                            <p class="result-description">A search for professional profiles matching your criteria on ${source}.</p>
+                            <a href="${fullQuery}" target="_blank" rel="noopener noreferrer" class="result-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M7.75 2.75a.75.75 0 00-1.5 0v1.636a2.625 2.625 0 00-1.246 5.108l-1.123.337a.75.75 0 00.956 1.145l1.507-1.506a3.375 3.375 0 013.219 2.732v3.836a.75.75 0 001.5 0v-3.836a3.375 3.375 0 013.219-2.732l1.507 1.506a.75.75 0 00.956-1.145l-1.123-.337a2.625 2.625 0 00-1.246-5.108V2.75z"/></svg>
+                                Search on Google
+                            </a>
+                        </div>
+                    `;
+                });
+            }
+        });
+
+        // --- Initial Tab Setup ---
+        switchTab('scholarships'); // Set the default active tab
+
+    </script>
+</body>
+</html>
